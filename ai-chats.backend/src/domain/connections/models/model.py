@@ -1,14 +1,8 @@
 from dataclasses import dataclass
-from enum import StrEnum
 
 from ddf.domain.models import AggregateRoot
 
-from src.domain.connections.vo import ConnectionOwner, ModelRoute, ModelSpec
-
-
-class ModelProtocol(StrEnum):
-    OPENAI_RESPONSES = "openai_responses"
-    OPENAI_CHAT_COMPLETIONS = "openai_chat_completions"
+from src.domain.connections.vo import ConnectionOwner, ModelProtocol, ModelRoute, ModelSpec
 
 
 @dataclass(kw_only=True)
