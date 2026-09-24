@@ -1,0 +1,3 @@
+include:
+  - docker/mongo.docker-compose.yml
+  - docker/redis.docker-compose.yml
