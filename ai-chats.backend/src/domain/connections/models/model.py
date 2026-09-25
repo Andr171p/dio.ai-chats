@@ -18,5 +18,5 @@ class ModelConnection(AggregateRoot):
     models: tuple[ModelSpec, ...]
     enabled: bool = True
 
-    def supports(self, model_id: str) -> bool:
+    def has_model(self, model_id: str) -> bool:
         return any(model.id == model_id for model in self.models)

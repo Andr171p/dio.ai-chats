@@ -21,7 +21,8 @@ class AttachmentContent:
     """Ссылка на приложенный файл."""
 
     attachment_id: UUID
-    type: Literal["attachment"] = "attachment"
+    content_type: str
+    type: Literal["content"] = "content"
 
 
 type MessageContent = TextContent | AttachmentContent

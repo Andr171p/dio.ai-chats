@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from ddf.domain.models import AggregateRoot
 
-from src.domain.connections.vo import ConnectionOwner
+from src.domain.connections.vo import ConnectionOwner, McpAuth, McpRoute
 
 
 @dataclass(kw_only=True)
@@ -11,6 +11,6 @@ class McpConnection(AggregateRoot):
 
     owner: ConnectionOwner
     name: str
-    route: ...
-    auth: ...
+    route: McpRoute
+    auth: McpAuth
     enabled: bool = True

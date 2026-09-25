@@ -12,6 +12,8 @@ from .usage import ModelPricing
 class ModelProtocol(StrEnum):
     OPENAI_RESPONSES = "openai_responses"
     OPENAI_CHAT_COMPLETIONS = "openai_chat_completions"
+    ANTHROPIC_MESSAGES = "anthropic_messages"
+    GEMINI = "gemini"
 
 
 class Modality(StrEnum):
