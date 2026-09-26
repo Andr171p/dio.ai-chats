@@ -6,11 +6,8 @@ requires-python = ">=3.14"
 dependencies = [
     "aiohttp>=3.14.3",
     "openai>=3.19.2",
-    "py-ddd-framework",
+    "py-ddd-framework[mongo]",
 ]
-
-[tool.uv.sources]
-py-ddd-framework = { git = "https://github.com/Andr171p/py-ddd-framework.git" }
 
 # ---------------------------------------------------------------------------
 # Ruff
@@ -180,3 +177,6 @@ ignore_names = [
     "delete",
     "head",
 ]
+
+[tool.uv.sources]
+py-ddd-framework = { git = "https://github.com/Andr171p/py-ddd-framework.git" }
