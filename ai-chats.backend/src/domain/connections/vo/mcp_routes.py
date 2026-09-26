@@ -22,7 +22,7 @@ class RemoteMcpRoute:
 
 @dataclass(frozen=True, slots=True)
 class EdgeMcpRoute:
-    executor_id: UUID
+    endpoint_id: UUID
     local_connection_id: str
 
     type: Literal["edge"] = "edge"
