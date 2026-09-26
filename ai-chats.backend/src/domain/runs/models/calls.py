@@ -1,9 +1,10 @@
 from typing import Any
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 
+from ddf.domain.exceptions import InvalidStateError
 from ddf.domain.models import Entity
 
 from src.domain.connections.vo import ModelSelection, Usage
@@ -28,6 +29,25 @@ class ModelCall(Entity):
     usage: Usage = field(default_factory=Usage)
 
     meta: dict[str, Any] = field(default_factory=dict)
+
+    def finish(
+        self,
+        finish_reason: FinishReason,
+        *,
+        usage: Usage | None = None,
+        error: ExecutionError | None = None,
+    ) -> None:
+        """Фиксирует итог вызова модели."""
+
+        if self.finished_at is not None:
+            raise InvalidStateError("Model call is already finished.")
+
+        self.finish_reason = finish_reason
+        self.error = error
+        self.finished_at = datetime.now(UTC)
+
+        if usage is not None:
+            self.usage = usage
 
 
 @dataclass(kw_only=True)
