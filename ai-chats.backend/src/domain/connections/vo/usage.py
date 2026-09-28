@@ -4,7 +4,6 @@ from typing import Annotated
 
 from dataclasses import dataclass
 from decimal import Decimal
-from uuid import UUID
 
 from typing_extensions import Doc
 
@@ -39,14 +38,6 @@ class UsageCost:
     @property
     def total(self) -> Decimal:
         return self.input + self.output + self.cache_read + self.cache_write
-
-
-@dataclass(frozen=True, slots=True)
-class ModelSelection:
-    """Выбранная модель в чате."""
-
-    model_id: str
-    connection_id: UUID
 
 
 @dataclass(frozen=True, slots=True)

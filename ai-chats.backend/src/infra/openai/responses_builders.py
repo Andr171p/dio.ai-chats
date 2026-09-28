@@ -109,6 +109,16 @@ async def build_openai_input(
                     }
                 )
 
+            case MessageInput(role="assistant"):
+                # История ассистента принимается только как output_text, строка - самый совместимый вариант
+                result.append(
+                    {
+                        "type": "message",
+                        "role": "assistant",
+                        "content": "".join(c.text for c in input_.content if isinstance(c, TextContent)),
+                    }
+                )
+
             case MessageInput():
                 content = await _build_openai_content(input_.content, media_client=media_client)
 

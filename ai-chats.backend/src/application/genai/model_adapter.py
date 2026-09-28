@@ -14,7 +14,7 @@ class ModelAdapter(Protocol):
     @property
     def protocol(self) -> ModelProtocol: ...
 
-    async def stream(
+    def stream(
         self,
         model_id: str,
         inputs: Sequence[ModelInput],

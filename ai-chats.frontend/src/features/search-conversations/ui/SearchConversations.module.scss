@@ -1,0 +1,87 @@
+@use '@/shared/styles/mixins' as *;
+
+.shortcut {
+  font: var(--text-caption);
+  font-family: var(--font-sans);
+  color: var(--color-text-tertiary);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-canvas);
+  color: var(--color-text-tertiary);
+
+  &:focus-within {
+    border-color: var(--color-focus);
+  }
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: min(420px, 60vh);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  @include thin-scrollbar;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 40px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+}
+
+.title {
+  @include truncate;
+  flex: 1;
+}
+
+.date {
+  flex: none;
+  font: var(--text-caption);
+  color: var(--color-text-tertiary);
+}
+
+.empty {
+  padding: var(--space-6) 0;
+  text-align: center;
+  color: var(--color-text-tertiary);
+}

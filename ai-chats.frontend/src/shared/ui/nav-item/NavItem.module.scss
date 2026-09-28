@@ -1,0 +1,86 @@
+@use '@/shared/styles/mixins' as *;
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-control);
+  transition: background-color var(--transition);
+
+  &:hover,
+  &:focus-within {
+    background: var(--color-surface-hover);
+
+    .actions {
+      opacity: 1;
+    }
+  }
+}
+
+.main {
+  @include reset-button;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: inherit;
+  color: var(--color-text-secondary);
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  &[aria-disabled='true'] {
+    cursor: default;
+  }
+}
+
+.icon {
+  flex: none;
+}
+
+// Место под кнопку действий, пока она видна
+.item:has(.actions):is(:hover, :focus-within, :has([aria-expanded='true']))
+  .main {
+  padding-right: 40px;
+}
+
+.label {
+  @include truncate;
+  flex: 1;
+}
+
+.actions {
+  position: absolute;
+  right: var(--space-1);
+  display: flex;
+  opacity: 0;
+  transition: opacity var(--transition);
+
+  // Открытое меню действий держит кнопку видимой
+  &:has([aria-expanded='true']) {
+    opacity: 1;
+  }
+}
+
+.active {
+  background: var(--color-surface);
+
+  .main {
+    color: var(--color-text);
+  }
+
+  .icon {
+    color: var(--color-accent-icon);
+  }
+}
+
+.collapsed .main {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}

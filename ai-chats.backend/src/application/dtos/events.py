@@ -10,7 +10,7 @@ from src.domain.runs.vo import FinishReason
 class ModelTextDelta(BaseModel):
     """Очередной фрагмент генерируемого текста."""
 
-    model_config = ConfigDict(frozen=True, alias_generator=to_camel)
+    model_config = ConfigDict(frozen=True, alias_generator=to_camel, validate_by_name=True)
 
     type: Literal["text_delta"] = "text_delta"
     delta: str = Field(description="Сгенерированный кусок")
@@ -19,7 +19,7 @@ class ModelTextDelta(BaseModel):
 class ModelToolCall(BaseModel):
     """Полностью сформированный tool call от модели."""
 
-    model_config = ConfigDict(frozen=True, alias_generator=to_camel)
+    model_config = ConfigDict(frozen=True, alias_generator=to_camel, validate_by_name=True)
 
     type: Literal["tool_call"] = "tool_call"
 
@@ -31,7 +31,7 @@ class ModelToolCall(BaseModel):
 class ModelCompleted(BaseModel):
     """Завершение генерации для одного вызова модели."""
 
-    model_config = ConfigDict(frozen=True, alias_generator=to_camel)
+    model_config = ConfigDict(frozen=True, alias_generator=to_camel, validate_by_name=True)
 
     type: Literal["completed"] = "completed"
 

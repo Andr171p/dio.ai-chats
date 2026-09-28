@@ -1,0 +1,89 @@
+@use '@/shared/styles/mixins' as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-composer);
+  background: var(--color-elevated);
+  transition: border-color var(--transition);
+
+  &:focus-within {
+    border-color: var(--color-border-strong);
+  }
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  max-height: 240px;
+  padding: var(--space-1) 0 0;
+  border: 0;
+  background: transparent;
+  font: var(--text-body);
+  resize: none;
+  outline: none;
+  overflow-y: auto;
+  @include thin-scrollbar;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: calc(-1 * var(--space-2));
+}
+
+.spacer {
+  flex: 1;
+}
+
+.disclaimer {
+  font: var(--text-caption);
+  font-size: 11px;
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+}
+
+.suggestion {
+  @include reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-height-sm);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+
+  &:hover {
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring(0);
+  }
+}

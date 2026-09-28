@@ -1,0 +1,125 @@
+// Семантические токены DIOS. Имена одинаковые для тёмной и светлой темы.
+
+:root {
+  --font-sans:
+    'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+
+  // Типографика
+  --text-display: 500 32px/40px var(--font-sans);
+  --text-title: 600 20px/28px var(--font-sans);
+  --text-subtitle: 600 15px/24px var(--font-sans);
+  --text-body: 400 15px/25px var(--font-sans);
+  --text-control: 400 14px/20px var(--font-sans);
+  --text-caption: 400 12px/18px var(--font-sans);
+  --text-label: 500 11px/16px var(--font-sans);
+  --text-code: 400 13px/20px var(--font-mono);
+
+  // Ритм
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  // Скругления
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-composer: 20px;
+  --radius-round: 999px;
+
+  // Геометрия
+  --sidebar-width: 256px;
+  --sidebar-rail-width: 56px;
+  --chat-width: 780px;
+  --control-height: 40px;
+  --control-height-sm: 32px;
+  --header-height: 56px;
+
+  --transition: 120ms ease;
+}
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: #222222;
+  --color-sidebar: #1c1c1c;
+  --color-surface: #2e2e2e;
+  --color-surface-hover: #353535;
+  --color-surface-active: #3b3b3b;
+  --color-elevated: #272727;
+  --color-code: #1c1c1c;
+  --color-backdrop: rgb(0 0 0 / 55%);
+
+  --color-border: #313131;
+  --color-border-strong: #454545;
+
+  --color-text: #fafaf7;
+  --color-text-secondary: #b6b6b2;
+  --color-text-tertiary: #8e8e8a;
+  --color-text-disabled: #656562;
+
+  --color-accent: #bb252d;
+  --color-accent-hover: #d8323c;
+  --color-accent-pressed: #a11f26;
+  --color-accent-disabled: #5c2023;
+  --color-accent-soft: #392326;
+  --color-accent-soft-border: #5a2427;
+  --color-accent-icon: #e8787e;
+  --color-on-accent: #ffffff;
+  --color-on-accent-disabled: rgb(255 255 255 / 40%);
+  --color-focus: #e8787e;
+
+  --color-success: #6cc28a;
+  --color-success-soft: #1e3326;
+  --color-danger: #f0868b;
+  --color-danger-soft: #3a2124;
+
+  --shadow-popover: 0 16px 40px rgb(0 0 0 / 45%);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --color-canvas: #fafaf7;
+  --color-sidebar: #f1f1ed;
+  --color-surface: #e8e8e3;
+  --color-surface-hover: #e1e1dc;
+  --color-surface-active: #d9d9d3;
+  --color-elevated: #ffffff;
+  --color-code: #f4f4f0;
+  --color-backdrop: rgb(28 28 28 / 30%);
+
+  --color-border: #e3e3de;
+  --color-border-strong: #cfcfc9;
+
+  --color-text: #1c1c1c;
+  --color-text-secondary: #53534f;
+  --color-text-tertiary: #7a7a75;
+  --color-text-disabled: #a9a9a4;
+
+  --color-accent: #bb252d;
+  --color-accent-hover: #d8323c;
+  --color-accent-pressed: #a11f26;
+  --color-accent-disabled: #e6b8bb;
+  --color-accent-soft: #f8e8e9;
+  --color-accent-soft-border: #ebbcbf;
+  --color-accent-icon: #bb252d;
+  --color-on-accent: #ffffff;
+  --color-on-accent-disabled: rgb(255 255 255 / 75%);
+  --color-focus: #d8545b;
+
+  --color-success: #2e7a4a;
+  --color-success-soft: #e2f1e7;
+  --color-danger: #b3262e;
+  --color-danger-soft: #f8e8e9;
+
+  --shadow-popover: 0 16px 40px rgb(28 28 28 / 14%);
+}
