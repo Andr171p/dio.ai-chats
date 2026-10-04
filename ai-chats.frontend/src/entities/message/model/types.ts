@@ -12,7 +12,21 @@ export interface AttachmentContent {
   contentType: string;
 }
 
-export type MessageContent = TextContent | AttachmentContent;
+export type ToolCallStatus =
+  'waiting_approval' | 'running' | 'completed' | 'failed' | 'cancelled';
+
+/** Вызов инструмента MCP-сервера внутри ответа ассистента */
+export interface ToolCallContent {
+  type: 'tool_call';
+  callId: string;
+  connectionId: string;
+  name: string;
+  /** Человекочитаемое название, если сервер его задал */
+  title: string | null;
+  status: ToolCallStatus;
+}
+
+export type MessageContent = TextContent | AttachmentContent | ToolCallContent;
 
 export interface Message {
   id: string;
@@ -35,14 +49,14 @@ export function messageText(message: Message): string {
 export function draftMessage(
   conversationId: string,
   role: MessageRole,
-  text: string,
+  content: MessageContent[],
 ): Message {
   return {
     id: `draft-${crypto.randomUUID()}`,
     conversationId,
     threadId: '',
     role,
-    content: [{ type: 'text', text }],
+    content,
     runId: null,
     createdAt: new Date().toISOString(),
   };

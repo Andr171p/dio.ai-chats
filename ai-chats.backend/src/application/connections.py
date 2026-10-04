@@ -146,7 +146,7 @@ async def list_available_models(
     batches = iterate_batches(
         connections,
         CursorPagination(size=100),
-        query=_available_to(identity),
+        query=available_to(identity),
         sort=Sort(field="id", direction="asc"),
     )
 
@@ -238,7 +238,7 @@ async def _change_server_route(
     )
 
 
-def _available_to(identity: Identity) -> Expression:
+def available_to(identity: Identity) -> Expression:
     """DSL-версия ``is_available_to`` для выборки включённых подключений."""
 
     return Group(

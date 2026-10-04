@@ -1,5 +1,5 @@
 from .conversation import Conversation, ConversationSettings
-from .message import AttachmentContent, Message, MessageContent, TextContent
+from .message import AttachmentContent, Message, MessageContent, TextContent, ToolCallContent
 from .thread import Thread
 
 __all__ = [
@@ -10,4 +10,5 @@ __all__ = [
     "MessageContent",
     "TextContent",
     "Thread",
+    "ToolCallContent",
 ]

@@ -89,9 +89,10 @@ export async function fetchConversation(id: string) {
 
 export async function createConversation(
   model: ModelSelection,
+  mcpConnectionIds: string[] = [],
 ): Promise<Conversation> {
   const conversation = await chatsApi.post<Conversation>(BASE, {
-    body: { model },
+    body: { model, mcpConnectionIds },
   });
   upsertConversation(conversation);
   return conversation;
@@ -102,12 +103,15 @@ export async function updateConversation(id: string, patch: ConversationPatch) {
     .getState()
     .items.find((item) => item.id === id);
 
-  // Оптимистично: название и модель меняются сразу, при ошибке откатываются
+  // Оптимистично: изменения видны сразу, при ошибке откатываются
   if (previous) {
     upsertConversation({
       ...previous,
       ...(patch.title && { title: { label: patch.title, source: 'manual' } }),
       ...(patch.model && { model: patch.model }),
+      ...(patch.mcpConnectionIds && {
+        mcpConnectionIds: patch.mcpConnectionIds,
+      }),
     });
   }
 

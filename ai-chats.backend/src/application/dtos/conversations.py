@@ -12,6 +12,7 @@ from .base import CamelModel
 class CreateConversation(CamelModel):
     model: ModelSelection
     title: str | None = Field(default=None, min_length=1, max_length=200)
+    mcp_connection_ids: tuple[UUID, ...] = Field(default=(), description="MCP серверы, подключённые к чату")
 
 
 class UpdateConversation(CamelModel):
@@ -19,12 +20,16 @@ class UpdateConversation(CamelModel):
 
     title: str | None = Field(default=None, min_length=1, max_length=200)
     model: ModelSelection | None = None
+    mcp_connection_ids: tuple[UUID, ...] | None = Field(
+        default=None, description="Заменяет подключённые MCP серверы"
+    )
 
 
 class ConversationResponse(CamelModel):
     id: UUID
     title: ConversationTitle | None
     model: ModelSelection
+    mcp_connection_ids: tuple[UUID, ...]
     current_thread_id: UUID
     created_at: datetime
     updated_at: datetime

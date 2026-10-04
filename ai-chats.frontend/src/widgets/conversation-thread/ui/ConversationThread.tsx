@@ -128,14 +128,14 @@ function MessageList({
             return message.role === 'user' ? (
               <UserMessage key={message.id} text={text} />
             ) : (
-              <AssistantMessage key={message.id} text={text}>
+              <AssistantMessage key={message.id} content={message.content}>
                 <MessageActions text={text} />
               </AssistantMessage>
             );
           })}
 
           {run?.status === 'streaming' && (
-            <AssistantMessage text={run.text} streaming />
+            <AssistantMessage content={run.content} streaming />
           )}
 
           {run?.status === 'failed' && (

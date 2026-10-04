@@ -1,4 +1,4 @@
-from .mcp_auth import ApiKeyMcpAuth, McpAuth, NoMcpAuth, OAuthMcpAuth
+from .mcp_auth import ApiKeyMcpAuth, DiosMcpAuth, McpAuth, NoMcpAuth, OAuthMcpAuth
 from .mcp_routes import EdgeMcpRoute, McpRoute, RemoteMcpRoute, SystemMcpRoute
 from .model_routes import EdgeModelRoute, ModelRoute, ServerModelRoute
 from .model_spec import Modality, ModelCapability, ModelProtocol, ModelSelection, ModelSpec
@@ -8,6 +8,7 @@ from .usage import ModelPricing, Usage, UsageCost
 __all__ = [
     "ApiKeyMcpAuth",
     "ConnectionOwner",
+    "DiosMcpAuth",
     "EdgeMcpRoute",
     "EdgeModelRoute",
     "McpAuth",

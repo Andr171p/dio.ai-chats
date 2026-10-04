@@ -14,5 +14,6 @@ export {
   type MessageContent,
   type MessageRole,
   type TextContent,
+  type ToolCallContent,
 } from './model/types';
 export { AssistantMessage, UserMessage } from './ui/ChatMessage';

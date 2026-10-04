@@ -2,6 +2,7 @@ import 'katex/dist/katex.min.css';
 import 'streamdown/styles.css';
 import { useMemo } from 'react';
 import { Streamdown, type LinkSafetyConfig } from 'streamdown';
+import { env } from '../../config/env';
 import { useTheme } from '../../lib/theme';
 import {
   controls,
@@ -16,8 +17,18 @@ import { normalizeMathDelimiters } from './normalize-math';
 
 const linkSafety: LinkSafetyConfig = {
   enabled: true,
+  // Ссылки на сервисы экосистемы (например, задача в DIO desk) открываются сразу
+  onLinkCheck: isTrustedUrl,
   renderModal: (props) => <ExternalLinkDialog {...props} />,
 };
+
+function isTrustedUrl(url: string): boolean {
+  try {
+    return env.trustedOrigins.includes(new URL(url).origin);
+  } catch {
+    return false;
+  }
+}
 
 interface MarkdownProps {
   children: string;

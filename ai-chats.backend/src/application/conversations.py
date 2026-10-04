@@ -12,7 +12,7 @@ from ddf.application.repositories import Repository
 from ddf.application.utils import iterate_batches
 from ddf.domain.utils import apply_changes
 
-from src.domain.connections.models import ModelConnection
+from src.domain.connections.models import McpConnection, ModelConnection
 from src.domain.conversations import (
     Conversation,
     ConversationSettings,
@@ -26,6 +26,7 @@ from src.domain.conversations.services import start_conversation
 from .auth import Identity
 from .connections import get_usable_connection
 from .dtos.conversations import ConversationResponse, CreateConversation, MessageResponse, UpdateConversation
+from .mcp_connections import ensure_usable_mcp_connections
 
 
 async def create_conversation(
@@ -35,13 +36,17 @@ async def create_conversation(
     conversations: Repository[Conversation],
     threads: Repository[Thread],
     connections: Repository[ModelConnection],
+    mcp_connections: Repository[McpConnection],
 ) -> ConversationResponse:
     await get_usable_connection(command.model, identity=identity, connections=connections)
+    await ensure_usable_mcp_connections(
+        command.mcp_connection_ids, identity=identity, mcp_connections=mcp_connections
+    )
 
     conversation, root_thread = start_conversation(
         organization_id=identity.organization_id,
         owner_id=identity.id,
-        settings=ConversationSettings(model=command.model, mcp_connection_ids=()),
+        settings=ConversationSettings(model=command.model, mcp_connection_ids=command.mcp_connection_ids),
         title=_manual_title(command.title),
     )
     await threads.create(root_thread)
@@ -88,15 +93,22 @@ async def update_conversation(
     identity: Identity,
     conversations: Repository[Conversation],
     connections: Repository[ModelConnection],
+    mcp_connections: Repository[McpConnection],
 ) -> ConversationResponse:
     conversation = await get_owned_conversation(
         conversation_id, identity=identity, conversations=conversations
     )
+    settings = conversation.settings
 
-    settings = None
     if command.model is not None:
         await get_usable_connection(command.model, identity=identity, connections=connections)
-        settings = replace(conversation.settings, model=command.model)
+        settings = replace(settings, model=command.model)
+
+    if command.mcp_connection_ids is not None:
+        await ensure_usable_mcp_connections(
+            command.mcp_connection_ids, identity=identity, mcp_connections=mcp_connections
+        )
+        settings = replace(settings, mcp_connection_ids=command.mcp_connection_ids)
 
     apply_changes(conversation, title=_manual_title(command.title), settings=settings)
     await conversations.update(conversation)
@@ -190,6 +202,7 @@ def to_conversation_response(conversation: Conversation) -> ConversationResponse
         id=conversation.id,
         title=conversation.title,
         model=conversation.settings.model,
+        mcp_connection_ids=conversation.settings.mcp_connection_ids,
         current_thread_id=conversation.current_thread_id,
         created_at=conversation.created_at,
         updated_at=conversation.updated_at,

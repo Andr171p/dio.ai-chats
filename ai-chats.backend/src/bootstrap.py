@@ -14,16 +14,19 @@ from openai import DefaultAsyncHttpxClient, Timeout
 from pymongo.asynchronous.database import AsyncDatabase
 
 from src.application.auth import Identity, IdentityProvider
+from src.application.mcp.client import McpClient
 from src.application.runtime import ChatRuntime
 from src.application.secrets.secret_store import SecretStore
-from src.domain.connections.models import ModelConnection
+from src.domain.connections.models import McpConnection, ModelConnection
 from src.domain.conversations import Conversation, Message, Thread
 from src.domain.runs import Run
+from src.infra.mcp import StreamableHttpMcpClient
 from src.infra.model_adapters import ServerModelAdapterResolver
 from src.infra.mongo.client import create_mongo_client
 from src.infra.mongo.models import (
     MONGO_MODELS,
     ConversationModel,
+    McpConnectionModel,
     MessageModel,
     ModelConnectionModel,
     RunModel,
@@ -32,6 +35,7 @@ from src.infra.mongo.models import (
 )
 from src.infra.mongo.repositories import (
     MongoConversationRepository,
+    MongoMcpConnectionRepository,
     MongoMessageRepository,
     MongoModelConnectionRepository,
     MongoRunRepository,
@@ -51,6 +55,8 @@ class Container:
     identity_provider: IdentityProvider
     secret_store: SecretStore
     connections: Repository[ModelConnection]
+    mcp_connections: Repository[McpConnection]
+    mcp_client: McpClient
     conversations: Repository[Conversation]
     threads: Repository[Thread]
     messages: Repository[Message]
@@ -100,6 +106,9 @@ def _build_container(
     connections = MongoModelConnectionRepository(
         database.get_collection(ModelConnectionModel.__collection_name__)
     )
+    mcp_connections = MongoMcpConnectionRepository(
+        database.get_collection(McpConnectionModel.__collection_name__)
+    )
     conversations = MongoConversationRepository(
         database.get_collection(ConversationModel.__collection_name__)
     )
@@ -112,11 +121,14 @@ def _build_container(
         http_client=model_http_client,
         media_client=MediaClient(),
     )
+    mcp_client = StreamableHttpMcpClient()
 
     return Container(
         identity_provider=identity_provider,
         secret_store=secret_store,
         connections=connections,
+        mcp_connections=mcp_connections,
+        mcp_client=mcp_client,
         conversations=conversations,
         threads=threads,
         messages=messages,
@@ -127,6 +139,8 @@ def _build_container(
             messages=messages,
             runs=runs,
             connections=connections,
+            mcp_connections=mcp_connections,
             resolve_adapter=resolve_adapter,
+            mcp_client=mcp_client,
         ),
     )

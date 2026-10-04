@@ -65,6 +65,39 @@ class McpToolCall(Entity):
     result: JsonValue | None = None
     error: ExecutionError | None = None
 
+    def complete(self, result: JsonValue) -> None:
+        self._finish(McpToolCallStatus.COMPLETED, result=result)
+
+    def fail(self, error: ExecutionError, *, result: JsonValue | None = None) -> None:
+        """Ошибка вызова; ``result`` - ответ сервера, если инструмент сам сообщил об ошибке."""
+
+        self._finish(McpToolCallStatus.FAILED, result=result, error=error)
+
+    def cancel(self) -> None:
+        self._finish(McpToolCallStatus.CANCELLED)
+
+    @property
+    def is_finished(self) -> bool:
+        return self.status in {
+            McpToolCallStatus.COMPLETED,
+            McpToolCallStatus.FAILED,
+            McpToolCallStatus.CANCELLED,
+        }
+
+    def _finish(
+        self,
+        status: McpToolCallStatus,
+        *,
+        result: JsonValue | None = None,
+        error: ExecutionError | None = None,
+    ) -> None:
+        if self.is_finished:
+            raise InvalidStateError("Tool call is already finished.")
+
+        self.status = status
+        self.result = result
+        self.error = error
+
 
 type RunStep = ModelCall | McpToolCall
 

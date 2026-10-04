@@ -8,9 +8,11 @@ import {
   type SyntheticEvent,
 } from 'react';
 import type { Conversation } from '@/entities/conversation';
-import { useDefaultModel } from '@/entities/model';
+import { useDefaultMcpServers } from '@/entities/mcp-server';
+import { findModel, useDefaultModel, useModels } from '@/entities/model';
 import { stopRun, useRun } from '@/entities/run';
 import { ModelSelect } from '@/features/select-model';
+import { ToolsSelect } from '@/features/select-tools';
 import { sendMessage } from '@/features/send-message';
 import { describeError } from '@/shared/api';
 import { IconButton } from '@/shared/ui/button';
@@ -44,6 +46,11 @@ export function ChatComposer({
   const draft = useDraft(conversationId);
   const run = useRun(conversationId);
   const defaultModel = useDefaultModel();
+  const defaultMcpServers = useDefaultMcpServers();
+  const model =
+    useModels(({ items }) =>
+      conversation ? findModel(items, conversation.model) : undefined,
+    ) ?? defaultModel;
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<string>();
 
@@ -69,12 +76,15 @@ export function ChatComposer({
     setDraft(conversationId, '');
     setError(undefined);
 
-    sendMessage({ conversationId, text, model: defaultModel }).catch(
-      (reason: unknown) => {
-        setDraft(conversationId, text);
-        setError(describeError(reason));
-      },
-    );
+    sendMessage({
+      conversationId,
+      text,
+      model: defaultModel,
+      mcpConnectionIds: defaultMcpServers,
+    }).catch((reason: unknown) => {
+      setDraft(conversationId, text);
+      setError(describeError(reason));
+    });
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -115,6 +125,7 @@ export function ChatComposer({
 
         <div className={styles.toolbar}>
           <IconButton icon={Plus} label="Прикрепить файл" soon />
+          <ToolsSelect conversation={conversation} model={model} />
           <div className={styles.spacer} />
           <ModelSelect conversation={conversation} />
           <IconButton icon={Mic} label="Голосовой ввод" soon />

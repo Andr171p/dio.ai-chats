@@ -1,17 +1,24 @@
+import { KeyRound, Monitor, Server, type LucideIcon } from 'lucide-react';
+import { useEffect, type ReactNode } from 'react';
 import {
-  Blocks,
-  KeyRound,
-  Monitor,
-  Server,
-  type LucideIcon,
-} from 'lucide-react';
-import { useEffect } from 'react';
+  loadMcpConnections,
+  loadMcpServers,
+  MCP_AUTH_LABELS,
+  mcpConnectionUrl,
+  McpServerCard,
+  useMcpConnections,
+  useMcpServers,
+} from '@/entities/mcp-server';
 import {
   ConnectionCard,
   loadModelConnections,
   useModelConnections,
 } from '@/entities/model';
 import { isAdmin, useSession } from '@/entities/session';
+import {
+  AddMcpServerButton,
+  McpConnectionControls,
+} from '@/features/manage-mcp-connections';
 import {
   AddConnectionButton,
   ConnectionControls,
@@ -100,12 +107,11 @@ export function ModelsPage() {
           </section>
 
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>MCP-серверы</h2>
-            <SoonCard
-              icon={Blocks}
-              title="DIO desk"
-              text="Задачи и заявки прямо в чате — подключение в пару кликов."
-            />
+            <header className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>MCP-серверы</h2>
+              {admin && <AddMcpServerButton />}
+            </header>
+            {admin ? <AdminMcpServers /> : <AvailableMcpServers />}
             <SoonCard
               icon={Server}
               title="Свои MCP-серверы"
@@ -115,6 +121,106 @@ export function ModelsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Все подключения MCP-серверов с управлением. */
+function AdminMcpServers() {
+  const { items, status, error } = useMcpConnections();
+
+  useEffect(() => {
+    void loadMcpConnections();
+  }, []);
+
+  return (
+    <ListState
+      status={status}
+      error={error}
+      empty={items.length === 0}
+      emptyText="Подключите DIO desk или другой MCP-сервер."
+      onRetry={loadMcpConnections}
+    >
+      {items.map((connection) => (
+        <McpServerCard
+          key={connection.id}
+          connectionId={connection.id}
+          name={connection.name}
+          enabled={connection.enabled}
+          meta={[
+            mcpConnectionUrl(connection),
+            MCP_AUTH_LABELS[connection.auth.type],
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+          actions={<McpConnectionControls connection={connection} />}
+        />
+      ))}
+    </ListState>
+  );
+}
+
+/** MCP-серверы, которые пользователь может подключить к чату. */
+function AvailableMcpServers() {
+  const { items, status, error } = useMcpServers();
+
+  useEffect(() => {
+    void loadMcpServers();
+  }, []);
+
+  return (
+    <ListState
+      status={status}
+      error={error}
+      empty={items.length === 0}
+      emptyText="Администратор ещё не подключил MCP-серверы."
+      onRetry={() => loadMcpServers({ force: true })}
+    >
+      {items.map((server) => (
+        <McpServerCard
+          key={server.connectionId}
+          connectionId={server.connectionId}
+          name={server.name}
+          meta="Подключается к чату кнопкой «Инструменты» под полем ввода"
+        />
+      ))}
+    </ListState>
+  );
+}
+
+function ListState({
+  status,
+  error,
+  empty,
+  emptyText,
+  onRetry,
+  children,
+}: {
+  status: 'idle' | 'loading' | 'ready' | 'error';
+  error: string | null;
+  empty: boolean;
+  emptyText: string;
+  onRetry: () => Promise<void>;
+  children: ReactNode;
+}) {
+  return (
+    <>
+      {status === 'loading' && empty && <Spinner label="Загружаем" />}
+      {status === 'error' && (
+        <Notice
+          action={
+            <Button size="sm" onClick={() => void onRetry()}>
+              Повторить
+            </Button>
+          }
+        >
+          {error}
+        </Notice>
+      )}
+      {status === 'ready' && empty && (
+        <p className={styles.empty}>{emptyText}</p>
+      )}
+      {children}
+    </>
   );
 }
 
