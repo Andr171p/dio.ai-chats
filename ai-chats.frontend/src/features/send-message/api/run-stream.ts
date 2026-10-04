@@ -1,10 +1,15 @@
 import type { Conversation } from '@/entities/conversation';
-import type { Message } from '@/entities/message';
+import type { Message, ToolCallContent } from '@/entities/message';
 import { chatsApi } from '@/shared/api';
 
 export type RunEvent =
   | { type: 'run.started'; runId: string; inputMessage: Message }
   | { type: 'message.delta'; runId: string; delta: string }
+  | {
+      type: 'tool_call.started' | 'tool_call.completed';
+      runId: string;
+      toolCall: ToolCallContent;
+    }
   | {
       type: 'run.completed';
       runId: string;

@@ -7,7 +7,7 @@ from ddf.application.dtos import Page, PaginationQuery
 from fastapi import APIRouter, Depends, status
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
-from src.api.dependencies import ContainerDep, CurrentIdentity
+from src.api.dependencies import AccessToken, ContainerDep, CurrentIdentity
 from src.application import conversations
 from src.application.dtos.conversations import (
     ConversationResponse,
@@ -33,6 +33,7 @@ async def create_conversation(
         conversations=container.conversations,
         threads=container.threads,
         connections=container.connections,
+        mcp_connections=container.mcp_connections,
     )
 
 
@@ -62,7 +63,7 @@ async def get_conversation(
     )
 
 
-@router.patch(path="/{conversation_id}", summary="Переименовать чат или сменить модель")
+@router.patch(path="/{conversation_id}", summary="Переименовать чат, сменить модель или MCP серверы")
 async def update_conversation(
     conversation_id: UUID,
     command: UpdateConversation,
@@ -75,6 +76,7 @@ async def update_conversation(
         identity=identity,
         conversations=container.conversations,
         connections=container.connections,
+        mcp_connections=container.mcp_connections,
     )
 
 
@@ -106,11 +108,14 @@ async def prepare_turn(
     conversation_id: UUID,
     command: SendMessage,
     identity: CurrentIdentity,
+    access_token: AccessToken,
     container: ContainerDep,
 ) -> ChatTurn:
     """Проверка до начала стрима, чтобы ошибки вернулись обычным HTTP ответом."""
 
-    return await container.chat_runtime.prepare(identity, conversation_id, command)
+    return await container.chat_runtime.prepare(
+        identity, conversation_id, command, access_token=access_token
+    )
 
 
 @router.post(
@@ -119,7 +124,8 @@ async def prepare_turn(
     summary="Отправить сообщение",
     description=(
         "Ответ модели приходит потоком Server-Sent Events. Тип события в поле `event` и `data.type`: "
-        "`run.started`, `message.delta`, `run.completed`, `run.failed`, `conversation.updated`. "
+        "`run.started`, `message.delta`, `tool_call.started`, `tool_call.completed`, `run.completed`, "
+        "`run.failed`, `conversation.updated`. "
         "Разрыв соединения останавливает генерацию, уже полученная часть ответа сохраняется."
     ),
 )

@@ -19,7 +19,7 @@ npm run dev        # http://localhost:5173
 | `npm run typecheck` | только проверка типов |
 | `npm run format` / `format:check` | Prettier |
 
-Переменные окружения — в [.env](.env): `VITE_AUTH_API_URL`, `VITE_CHATS_API_URL` (базовые адреса API для браузера) и `AUTH_API_TARGET`, `CHATS_API_TARGET` (куда проксирует dev-сервер). Локальные переопределения — в `.env.local`.
+Переменные окружения — в [.env](.env): `VITE_AUTH_API_URL`, `VITE_CHATS_API_URL` (базовые адреса API для браузера), `VITE_TRUSTED_ORIGINS` (сервисы DIOS, ссылки на которые открываются без предупреждения) и `AUTH_API_TARGET`, `CHATS_API_TARGET` (куда проксирует dev-сервер). Локальные переопределения — в `.env.local`.
 
 ## Архитектура
 

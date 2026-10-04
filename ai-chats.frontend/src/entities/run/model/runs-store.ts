@@ -1,11 +1,13 @@
 import { create } from 'zustand';
+import type { MessageContent, ToolCallContent } from '@/entities/message';
 import { registerStoreReset } from '@/shared/lib/store-reset';
+import { appendText, upsertToolCall } from '../lib/content';
 
 /** Генерация ответа модели в конкретном чате. */
 export interface Run {
   runId: string | null;
-  /** Уже полученная часть ответа */
-  text: string;
+  /** Уже полученная часть ответа: текст и вызовы инструментов */
+  content: MessageContent[];
   status: 'streaming' | 'failed';
   error: string | null;
   /** Текст, который можно отправить повторно, если сервер его не принял */
@@ -53,7 +55,7 @@ export function startRun(conversationId: string): AbortSignal {
       ...runs,
       [conversationId]: {
         runId: null,
-        text: '',
+        content: [],
         status: 'streaming',
         error: null,
         retryText: null,
@@ -69,7 +71,15 @@ export function setRunId(conversationId: string, runId: string) {
 }
 
 export function appendRunText(conversationId: string, delta: string) {
-  patchRun(conversationId, ({ text }) => ({ text: text + delta }));
+  patchRun(conversationId, ({ content }) => ({
+    content: appendText(content, delta),
+  }));
+}
+
+export function setRunToolCall(conversationId: string, call: ToolCallContent) {
+  patchRun(conversationId, ({ content }) => ({
+    content: upsertToolCall(content, call),
+  }));
 }
 
 export function failRun(

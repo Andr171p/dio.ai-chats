@@ -16,6 +16,7 @@ import {
   finishRun,
   getRun,
   setRunId,
+  setRunToolCall,
   startRun,
 } from '@/entities/run';
 import { describeError, isAbortError } from '@/shared/api';
@@ -23,21 +24,24 @@ import { openChat } from '@/shared/lib/navigation';
 import { streamRun } from '../api/run-stream';
 
 interface SendMessageParams {
-  /** null — новый чат, он будет создан с моделью `model` */
+  /** null — новый чат, он будет создан с моделью `model` и MCP-серверами `mcpConnectionIds` */
   conversationId: string | null;
   text: string;
   model?: ModelSelection;
+  mcpConnectionIds?: string[];
 }
 
 export async function sendMessage({
   conversationId,
   text,
   model,
+  mcpConnectionIds,
 }: SendMessageParams) {
-  const id = conversationId ?? (await createConversationWith(model));
+  const id =
+    conversationId ?? (await createConversationWith(model, mcpConnectionIds));
   if (getRun(id)?.status === 'streaming') return;
 
-  const draft = draftMessage(id, 'user', text);
+  const draft = draftMessage(id, 'user', [{ type: 'text', text }]);
   addMessage(id, draft);
   const signal = startRun(id);
   if (!conversationId) openChat(id);
@@ -56,6 +60,12 @@ export async function sendMessage({
           break;
         case 'message.delta':
           deltas.push(event.delta);
+          break;
+        case 'tool_call.started':
+        case 'tool_call.completed':
+          // Текст до вызова инструмента должен оказаться выше него
+          deltas.flush();
+          setRunToolCall(id, event.toolCall);
           break;
         case 'run.completed':
           completed = true;
@@ -85,7 +95,8 @@ export async function sendMessage({
   // Остановка или обрыв: сервер сохранил полученную часть ответа
   const run = getRun(id);
   if (run?.status === 'streaming') {
-    if (run.text) addMessage(id, draftMessage(id, 'assistant', run.text));
+    if (run.content.length > 0)
+      addMessage(id, draftMessage(id, 'assistant', run.content));
     finishRun(id);
   }
   void loadMessages(id, { force: true });
@@ -93,9 +104,10 @@ export async function sendMessage({
 
 async function createConversationWith(
   model: ModelSelection | undefined,
+  mcpConnectionIds: string[] = [],
 ): Promise<string> {
   if (!model) throw new Error('Не выбрана модель для нового чата');
-  const conversation = await createConversation(model);
+  const conversation = await createConversation(model, mcpConnectionIds);
   return conversation.id;
 }
 

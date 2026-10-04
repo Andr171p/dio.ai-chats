@@ -4,6 +4,7 @@ export {
   finishRun,
   getRun,
   setRunId,
+  setRunToolCall,
   startRun,
   stopRun,
   useRun,

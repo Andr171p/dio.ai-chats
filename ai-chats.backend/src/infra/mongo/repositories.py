@@ -4,24 +4,39 @@ from collections.abc import Mapping
 
 from ddf.infra.database.mongo import MongoRepository
 
-from src.domain.connections.models import ModelConnection
+from src.domain.connections.models import McpConnection, ModelConnection
 from src.domain.conversations import Conversation, Message, Thread
 from src.domain.runs import Run
 
 from .mappers import DataclassMapper, RunMapper
-from .models import ConversationModel, MessageModel, ModelConnectionModel, RunModel, ThreadModel
+from .models import (
+    ConversationModel,
+    McpConnectionModel,
+    MessageModel,
+    ModelConnectionModel,
+    RunModel,
+    ThreadModel,
+)
+
+CONNECTION_FILTERS: Mapping[str, str] = {
+    "id": "_id",
+    "enabled": "enabled",
+    "owner.scope": "owner.scope",
+    "owner.organization_id": "owner.organizationId",
+    "owner.user_id": "owner.userId",
+}
 
 
 class MongoModelConnectionRepository(MongoRepository[ModelConnection, ModelConnectionModel]):
     model = ModelConnectionModel
     data_mapper = DataclassMapper(ModelConnection, ModelConnectionModel)
-    filter_whitelist: ClassVar[Mapping[str, str]] = {
-        "id": "_id",
-        "enabled": "enabled",
-        "owner.scope": "owner.scope",
-        "owner.organization_id": "owner.organizationId",
-        "owner.user_id": "owner.userId",
-    }
+    filter_whitelist: ClassVar[Mapping[str, str]] = CONNECTION_FILTERS
+
+
+class MongoMcpConnectionRepository(MongoRepository[McpConnection, McpConnectionModel]):
+    model = McpConnectionModel
+    data_mapper = DataclassMapper(McpConnection, McpConnectionModel)
+    filter_whitelist: ClassVar[Mapping[str, str]] = CONNECTION_FILTERS
 
 
 class MongoConversationRepository(MongoRepository[Conversation, ConversationModel]):

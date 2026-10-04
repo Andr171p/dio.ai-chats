@@ -6,6 +6,7 @@ from .models import (
     MessageContent,
     TextContent,
     Thread,
+    ToolCallContent,
 )
 from .types import MessageRole
 from .vo import ConversationTitle, ThreadOrigin, TitleSource
@@ -22,4 +23,5 @@ __all__ = [
     "Thread",
     "ThreadOrigin",
     "TitleSource",
+    "ToolCallContent",
 ]

@@ -1,11 +1,13 @@
-from typing import Literal
+from typing import Annotated, Literal
 
 from dataclasses import dataclass
 from uuid import UUID
 
 from ddf.domain.models import Entity
+from typing_extensions import Doc
 
 from src.domain.conversations.types import MessageRole
+from src.domain.runs.vo import McpToolCallStatus
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,7 +27,19 @@ class AttachmentContent:
     type: Literal["content"] = "content"
 
 
-type MessageContent = TextContent | AttachmentContent
+@dataclass(frozen=True, slots=True)
+class ToolCallContent:
+    """Вызов инструмента в ответе ассистента. Аргументы и результат хранятся в шаге ``Run``."""
+
+    call_id: Annotated[UUID, Doc("Идентификатор ``McpToolCall``")]
+    connection_id: UUID
+    name: str
+    title: Annotated[str | None, Doc("Человекочитаемое название инструмента")]
+    status: McpToolCallStatus
+    type: Literal["tool_call"] = "tool_call"
+
+
+type MessageContent = TextContent | AttachmentContent | ToolCallContent
 
 
 @dataclass(kw_only=True)

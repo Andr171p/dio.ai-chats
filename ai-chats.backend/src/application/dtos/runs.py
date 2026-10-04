@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import Field
 
 from src.domain.connections.vo import Usage
+from src.domain.conversations import ToolCallContent
 from src.domain.runs import ExecutionError, FinishReason
 
 from .base import CamelModel
@@ -23,6 +24,21 @@ class MessageDelta(CamelModel):
     type: Literal["message.delta"] = "message.delta"
     run_id: UUID
     delta: str
+
+
+class ToolCallStarted(CamelModel):
+    type: Literal["tool_call.started"] = "tool_call.started"
+    run_id: UUID
+    tool_call: ToolCallContent
+
+
+class ToolCallCompleted(CamelModel):
+    """Инструмент отработал: статус completed, failed или cancelled."""
+
+    type: Literal["tool_call.completed"] = "tool_call.completed"
+    run_id: UUID
+    tool_call: ToolCallContent
+
 
 
 class RunCompleted(CamelModel):
@@ -47,6 +63,12 @@ class ConversationUpdated(CamelModel):
 
 
 type RunEvent = Annotated[
-    RunStarted | MessageDelta | RunCompleted | RunFailed | ConversationUpdated,
+    RunStarted
+    | MessageDelta
+    | ToolCallStarted
+    | ToolCallCompleted
+    | RunCompleted
+    | RunFailed
+    | ConversationUpdated,
     Field(discriminator="type"),
 ]

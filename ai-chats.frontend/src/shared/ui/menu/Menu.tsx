@@ -31,6 +31,8 @@ interface MenuItemProps extends Omit<ComponentProps<'button'>, 'onSelect'> {
   description?: ReactNode;
   trailing?: ReactNode;
   onSelect?: () => void;
+  /** false — пункт-переключатель: меню остаётся открытым */
+  closeOnSelect?: boolean;
 }
 
 export function MenuItem({
@@ -40,6 +42,7 @@ export function MenuItem({
   description,
   trailing,
   onSelect,
+  closeOnSelect = true,
   className,
   children,
   ...props
@@ -56,7 +59,7 @@ export function MenuItem({
         selected && styles.selected,
         className,
       )}
-      popoverTarget={menuId ?? undefined}
+      popoverTarget={(closeOnSelect && menuId) || undefined}
       popoverTargetAction="hide"
       onClick={onSelect}
       {...props}

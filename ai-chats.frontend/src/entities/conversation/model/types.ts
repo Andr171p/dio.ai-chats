@@ -10,6 +10,8 @@ export interface Conversation {
   id: string;
   title: ConversationTitle | null;
   model: ModelSelection;
+  /** MCP-серверы, инструменты которых доступны модели в этом чате */
+  mcpConnectionIds: string[];
   currentThreadId: string;
   createdAt: string;
   updatedAt: string;
@@ -18,6 +20,7 @@ export interface Conversation {
 export interface ConversationPatch {
   title?: string;
   model?: ModelSelection;
+  mcpConnectionIds?: string[];
 }
 
 export const NEW_CHAT_TITLE = 'Новый чат';
