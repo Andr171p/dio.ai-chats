@@ -29,7 +29,7 @@ requires-dist = [
     { name = "cryptography", specifier = ">=46" },
     { name = "mcp", specifier = ">=2.3" },
     { name = "openai", specifier = ">=3.19.2" },
-    { name = "py-ddd-framework", extras = ["mongo"], git = "https://github.com/Andr171p/py-ddd-framework.git" },
+    { name = "py-ddd-framework", extras = ["mongo"], git = "https://github.com/Andr171p/py-ddd-framework.git?rev=e29485433c00bd0dc83c02d1972061e7b138f177" },
 ]
 
 [[package]]
@@ -1094,11 +1094,12 @@ wheels = [
 [[package]]
 name = "py-ddd-framework"
 version = "0.1.0"
-source = { git = "https://github.com/Andr171p/py-ddd-framework.git#8aa2fea6716ba43c07e87d41d5ebf4c5bc5b7b49" }
+source = { git = "https://github.com/Andr171p/py-ddd-framework.git?rev=e29485433c00bd0dc83c02d1972061e7b138f177#e29485433c00bd0dc83c02d1972061e7b138f177" }
 dependencies = [
     { name = "fastapi", extra = ["all"] },
     { name = "msgpack" },
     { name = "orjson" },
+    { name = "pyjwt", extra = ["crypto"] },
     { name = "redis" },
 ]
 

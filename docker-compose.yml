@@ -1,0 +1,102 @@
+name: dio-ai-chats
+
+services:
+  mongo:
+    image: ${MONGO_IMAGE:-mongo:8}
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Set MONGO_PASSWORD in .env}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-ai_chats}
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --host 127.0.0.1
+          --username "$$MONGO_INITDB_ROOT_USERNAME"
+          --password "$$MONGO_INITDB_ROOT_PASSWORD"
+          --authenticationDatabase admin
+          --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:8-alpine}
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -q PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./ai-chats.backend
+    restart: unless-stopped
+    init: true
+    environment:
+      MONGO_HOST: mongo
+      MONGO_PORT: "27017"
+      MONGO_USERNAME: ${MONGO_USERNAME:-root}
+      MONGO_PASSWORD: ${MONGO_PASSWORD:?Set MONGO_PASSWORD in .env}
+      MONGO_DB: ${MONGO_DB:-ai_chats}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+      IAM_BASE_URL: ${IAM_BASE_URL:?Set IAM_BASE_URL in .env}
+      IAM_DEFAULT_ORGANIZATION_ID: ${IAM_DEFAULT_ORGANIZATION_ID:?Set IAM_DEFAULT_ORGANIZATION_ID in .env}
+      IAM_IDENTITY_CACHE_TTL: ${IAM_IDENTITY_CACHE_TTL:-60}
+      SECRETS_MASTER_KEY: ${SECRETS_MASTER_KEY:?Set SECRETS_MASTER_KEY in .env}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/openapi.json', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    stop_grace_period: 60s
+
+  frontend:
+    build:
+      context: ./ai-chats.frontend
+      args:
+        VITE_TRUSTED_ORIGINS: ${VITE_TRUSTED_ORIGINS:-}
+    restart: unless-stopped
+    environment:
+      IAM_BASE_URL: ${IAM_BASE_URL:?Set IAM_BASE_URL in .env}
+      # Preserve Nginx variables ($host, $uri, ...) during envsubst.
+      NGINX_ENVSUBST_FILTER: ^IAM_BASE_URL$$
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/healthz]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mongo-data:
+  redis-data:

@@ -181,4 +181,4 @@ ignore_names = [
 ]
 
 [tool.uv.sources]
-py-ddd-framework = { git = "https://github.com/Andr171p/py-ddd-framework.git" }
+py-ddd-framework = { git = "https://github.com/Andr171p/py-ddd-framework.git", rev = "e29485433c00bd0dc83c02d1972061e7b138f177" }
