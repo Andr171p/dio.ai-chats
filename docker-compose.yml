@@ -87,7 +87,7 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
-      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8081}:80"
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-18080}:80"
     depends_on:
       backend:
         condition: service_healthy

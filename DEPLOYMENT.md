@@ -52,14 +52,14 @@ cat /proc/sys/kernel/random/uuid  # IAM_DEFAULT_ORGANIZATION_ID, если UUID �
 docker compose up -d --build --wait
 ```
 
-По умолчанию приложение доступно на сервере по `http://127.0.0.1:8081`.
+По умолчанию приложение доступно на сервере по `http://127.0.0.1:18080`.
 Для просмотра с компьютера без публикации HTTP наружу можно открыть SSH-туннель:
 
 ```bash
-ssh -L 8081:127.0.0.1:8081 USER@SERVER
+ssh -L 18080:127.0.0.1:18080 USER@SERVER
 ```
 
-После этого откройте `http://localhost:8081`. Для прямого HTTP-доступа из сети
+После этого откройте `http://localhost:18080`. Для прямого HTTP-доступа из сети
 можно задать `HTTP_BIND=0.0.0.0` и нужный `HTTP_PORT`. Для публичного рабочего
 сервиса настройте HTTPS, как описано ниже.
 
@@ -123,7 +123,7 @@ Nginx вроде `$host` и `$uri` сохраняются.
 
 ## HTTPS на сервере
 
-По умолчанию Compose публикует HTTP только на `127.0.0.1:8081`, чтобы его можно
+По умолчанию Compose публикует HTTP только на `127.0.0.1:18080`, чтобы его можно
 было поставить за существующий TLS reverse proxy. Все приложения при этом
 по-прежнему запускаются одной командой Compose. Сертификат и внешний proxy
 настраиваются отдельно для вашего домена.
@@ -140,9 +140,9 @@ Nginx вроде `$host` и `$uri` сохраняются.
 docker compose config --quiet
 docker compose ps
 docker compose logs --tail=100 backend frontend
-curl -fsS http://127.0.0.1:8081/healthz
-curl -fsS http://127.0.0.1:8081/chats-api/openapi.json
-curl -i http://127.0.0.1:8081/auth-api/api/v1/auth/userinfo
+curl -fsS http://127.0.0.1:18080/healthz
+curl -fsS http://127.0.0.1:18080/chats-api/openapi.json
+curl -i http://127.0.0.1:18080/auth-api/api/v1/auth/userinfo
 ```
 
 Последний запрос без токена обычно возвращает `401`. `502` означает проблему
