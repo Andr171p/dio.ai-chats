@@ -9,6 +9,7 @@ import {
   type ModelSpec,
 } from '@/entities/model';
 import { describeError } from '@/shared/api';
+import { randomId } from '@/shared/lib/random-id';
 import { Button, IconButton } from '@/shared/ui/button';
 import { DialogActions } from '@/shared/ui/dialog';
 import { SelectField, TextField } from '@/shared/ui/field';
@@ -21,7 +22,7 @@ interface ModelRow {
 }
 
 const newRow = (spec?: ModelSpec): ModelRow => ({
-  key: crypto.randomUUID(),
+  key: randomId(),
   spec: spec ?? {
     id: '',
     provider: '',

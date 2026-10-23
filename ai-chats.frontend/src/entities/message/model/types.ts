@@ -1,3 +1,5 @@
+import { randomId } from '@/shared/lib/random-id';
+
 export type MessageRole = 'user' | 'assistant';
 
 export interface TextContent {
@@ -52,7 +54,7 @@ export function draftMessage(
   content: MessageContent[],
 ): Message {
   return {
-    id: `draft-${crypto.randomUUID()}`,
+    id: `draft-${randomId()}`,
     conversationId,
     threadId: '',
     role,
