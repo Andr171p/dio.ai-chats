@@ -1,4 +1,4 @@
-# Optional host Nginx, in front of the Compose frontend on 127.0.0.1:8080.
+# Optional host Nginx, in front of the Compose frontend on 127.0.0.1:8081.
 # Replace chat.example.com and certificate paths. Obtain certificates first.
 server {
     listen 80;
@@ -15,7 +15,7 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
 
     location / {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:8081;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
