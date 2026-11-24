@@ -14,6 +14,7 @@ import { Button, IconButton } from '@/shared/ui/button';
 import { DialogActions } from '@/shared/ui/dialog';
 import { SelectField, TextField } from '@/shared/ui/field';
 import { Notice } from '@/shared/ui/notice';
+import { Switch } from '@/shared/ui/switch';
 import styles from './ConnectionForm.module.scss';
 
 interface ModelRow {
@@ -188,6 +189,38 @@ export function ConnectionForm({ connection, onDone }: ConnectionFormProps) {
                 setRows((current) => current.filter((row) => row.key !== key))
               }
             />
+            <div className={styles.tools}>
+              <div>
+                <label
+                  id={`model-tools-label-${key}`}
+                  htmlFor={`model-tools-${key}`}
+                  className={styles.toolsLabel}
+                >
+                  Поддерживает инструменты
+                </label>
+                <p id={`model-tools-hint-${key}`} className={styles.toolsHint}>
+                  Разрешает модели вызывать инструменты подключённых
+                  MCP-серверов.
+                </p>
+              </div>
+              <Switch
+                id={`model-tools-${key}`}
+                aria-labelledby={`model-tools-label-${key}`}
+                aria-describedby={`model-tools-hint-${key}`}
+                checked={spec.capabilities?.includes('tools') ?? false}
+                disabled={saving}
+                onChange={(enabled) => {
+                  const capabilities = (spec.capabilities ?? []).filter(
+                    (capability) => capability !== 'tools',
+                  );
+                  updateRow(key, {
+                    capabilities: enabled
+                      ? [...capabilities, 'tools']
+                      : capabilities,
+                  });
+                }}
+              />
+            </div>
           </div>
         ))}
         <Button
