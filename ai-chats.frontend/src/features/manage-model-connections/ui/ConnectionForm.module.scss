@@ -43,3 +43,22 @@
 .removeModel {
   margin-bottom: 4px;
 }
+
+.tools {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.toolsLabel {
+  font: var(--text-control);
+  cursor: pointer;
+}
+
+.toolsHint {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font: var(--text-caption);
+}
